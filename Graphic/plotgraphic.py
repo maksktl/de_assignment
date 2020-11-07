@@ -45,6 +45,9 @@ class PlotGraphic:
         self.e1 = None
         self.e2 = None
         self.e3 = None
+        self.em1 = None
+        self.em2 = None
+        self.em3 = None
 
     def change_info(self, event):
         """
@@ -75,7 +78,7 @@ class PlotGraphic:
         e_runge_kutta_x, e_runge_kutta_y = \
             DE_Error.compute_gte(exact_solution_x, runge_kutta_y, exact_solution_y)
 
-        plt.subplot(2, 1, 2)
+        plt.subplot(3, 1, 2)
         max_x, min_x = max_in_lists(e_euler_x, e_improved_euler_x, e_runge_kutta_x), \
                        min_in_lists(e_euler_x, e_improved_euler_x, e_runge_kutta_x)
 
@@ -88,7 +91,7 @@ class PlotGraphic:
         self.e2.set_data(e_improved_euler_x, e_improved_euler_y)
         self.e3.set_data(e_runge_kutta_x, e_runge_kutta_y)
 
-        plt.subplot(2, 1, 1)
+        plt.subplot(3, 1, 1)
         max_x, min_x = max_in_lists(exact_solution_x, euler_x, improved_euler_x, runge_kutta_x), \
                        min_in_lists(exact_solution_x, euler_x, improved_euler_x, runge_kutta_x)
         max_y, min_y = max_in_lists(exact_solution_y, euler_y, improved_euler_y, runge_kutta_y), \
@@ -102,8 +105,24 @@ class PlotGraphic:
         self.p3.set_data(runge_kutta_x, runge_kutta_y)
         self.p4.set_data(exact_solution_x, exact_solution_y)
 
-        plt.draw()
+        _n = [i for i in range(1, int(self.exact_solution.n) + 1)]
+        euler_max_error = DE_Error.compute_euler_max_error(self.numerical_solution, self.exact_solution, len(_n))
+        improved_euler_max_error = DE_Error.compute_improved_euler_max_error(self.numerical_solution, self.exact_solution, len(_n))
+        runge_kutta_max_error = DE_Error.compute_runge_kutta_max_error(self.numerical_solution, self.exact_solution, len(_n))
 
+        self.em1.set_data(_n, euler_max_error)
+        self.em2.set_data(_n, improved_euler_max_error)
+        self.em3.set_data(_n, runge_kutta_max_error)
+
+        plt.subplot(3, 1, 3)
+        max_x, min_x = len(_n), 1
+        max_y, min_y = max_in_lists(euler_max_error, improved_euler_max_error, runge_kutta_max_error), \
+                       min_in_lists(euler_max_error, improved_euler_max_error, runge_kutta_max_error)
+        plt.xlim(min_x, max_x)
+        plt.ylim(min_y, max_y)
+
+        plt.draw()
+    # qefasd4wsdf4rqq34fqq4432dfaFASdf
     def hide_or_show(self, label):
         """
         Method to hide or show the line in a plot
@@ -111,7 +130,22 @@ class PlotGraphic:
         :param label:
         :return:
         """
-        self.lines[self.names.index(label)].set_visible(not self.lines[self.names.index(label)].get_visible())
+        index = self.names.index(label)
+        if index == 0:
+            self.p1.set_visible(not self.p1.get_visible())
+            self.e1.set_visible(not self.e1.get_visible())
+            self.em1.set_visible(not self.em1.get_visible())
+        if index == 1:
+            self.p2.set_visible(not self.p2.get_visible())
+            self.e2.set_visible(not self.e2.get_visible())
+            self.em2.set_visible(not self.em2.get_visible())
+        if index == 2:
+            self.p3.set_visible(not self.p3.get_visible())
+            self.e3.set_visible(not self.e3.get_visible())
+            self.em3.set_visible(not self.em3.get_visible())
+        if index == 3:
+            self.p4.set_visible(not self.p4.get_visible())
+
         plt.draw()
 
     def show(self):
@@ -133,7 +167,7 @@ class PlotGraphic:
         plt.grid()
 
         plt.subplots_adjust(right=0.5)
-        plt.subplot(2, 1, 1)
+        plt.subplot(3, 1, 1)
         plt.title("f(x,y)=y/x-y-x")
         max_x, min_x = max_in_lists(exact_solution_x, euler_x, improved_euler_x, runge_kutta_x), \
                        min_in_lists(exact_solution_x, euler_x, improved_euler_x, runge_kutta_x)
@@ -179,9 +213,9 @@ class PlotGraphic:
 
         hide_shower.on_clicked(self.hide_or_show)
 
-        # Local Errors
-        plt.subplot(2, 1, 2)
-        plt.title("Local Errors")
+        ''' Local Errors'''
+        plt.subplot(3, 1, 2)
+        plt.title("gte")
 
         e_euler_x, e_euler_y = DE_Error.compute_gte(exact_solution_x, euler_y, exact_solution_y)
         e_improved_euler_x, e_improved_euler_y = DE_Error.compute_gte(exact_solution_x, improved_euler_y,
@@ -196,12 +230,34 @@ class PlotGraphic:
         plt.xlim(min_x, max_x)
         plt.ylim(min_y, max_y)
         self.e1, = plt.plot(e_euler_x, e_euler_y, linewidth=2, color=config.EULER_COLOR,
-                            label="Euler method local error")
+                            label="Euler method error")
         self.e2, = plt.plot(e_improved_euler_x, e_improved_euler_y, linewidth=2, color=config.IMPROVED_EULER_COLOR,
-                            label="Improved euler method local error")
+                            label="Improved euler method error")
         self.e3, = plt.plot(e_runge_kutta_x, e_runge_kutta_y, linewidth=2, color=config.RUNGE_KUTTA_COLOR,
-                            label="Runge kutta method local error")
+                            label="Runge kutta method error")
         plt.legend()
-        # Show the graphic
         plt.grid()
+
+        '''Max Error'''
+
+        plt.subplot(3, 1, 3)
+        plt.title("Max Error")
+
+        _n = [i for i in range(1, int(self.exact_solution.n)+1)]
+        euler_max_error = DE_Error.compute_euler_max_error(self.numerical_solution, self.exact_solution, len(_n))
+        improved_euler_max_error = DE_Error.compute_improved_euler_max_error(self.numerical_solution, self.exact_solution, len(_n))
+        runge_kutta_max_error = DE_Error.compute_runge_kutta_max_error(self.numerical_solution, self.exact_solution, len(_n))
+
+        max_x, min_x = len(_n), 1
+        max_y, min_y = max_in_lists(euler_max_error, improved_euler_max_error, runge_kutta_max_error), \
+                       min_in_lists(euler_max_error, improved_euler_max_error, runge_kutta_max_error)
+        plt.xlim(min_x, max_x)
+        plt.ylim(min_y, max_y)
+
+        self.em1, = plt.plot(_n, euler_max_error, linewidth=2, color=config.EULER_COLOR, label="Euler max error")
+        self.em2, = plt.plot(_n, improved_euler_max_error, linewidth=2, color=config.IMPROVED_EULER_COLOR, label="Improved Euler max error")
+        self.em3, = plt.plot(_n, runge_kutta_max_error, linewidth=2, color=config.RUNGE_KUTTA_COLOR, label="Runge Kutta max error")
+        plt.legend()
+        plt.grid()
+
         plt.show()

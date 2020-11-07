@@ -23,3 +23,4 @@ class BDE:
 
     def set_n(self, n):
         self.n = n
+        self.h = ((self.x - self.x_0) / self.n)

@@ -25,7 +25,7 @@ class NumericalMethod(BDE):
             k1 = res_x[i] + self.h / 2
             k2 = res_y[i] + self.h * f / 2
             res_x.append(res_x[i] + self.h)
-            res_y.append(res_y[i] + self.f.call(k1, k2))
+            res_y.append(res_y[i] + self.h*self.f.call(k1, k2))
 
         return res_x, res_y
 
