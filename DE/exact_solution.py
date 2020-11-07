@@ -15,9 +15,9 @@ class ExactSolution(BDE):
         """
         res_x = [self.x_0]
         res_y = [self.y_0]
-        C = math.exp(self.x_0)*(self.x_0+self.y_0)/self.x_0
+        C = math.exp(self.x_0) * (self.x_0 + self.y_0) / self.x_0
 
-        for i in range(1, int(self.n)+1):
+        for i in range(1, int(self.n) + 1):
             res_x.append(res_x[i - 1] + self.h)
             res_y.append(self.f.call(res_x[i], C))
 

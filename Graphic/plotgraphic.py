@@ -6,6 +6,28 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Button, TextBox, CheckButtons
 
 
+def max_in_lists(*args):
+    res = None
+    for i in args:
+        if not res:
+            res = max(i)
+        else:
+            tmp = max(i)
+            res = max(res, tmp)
+    return res
+
+
+def min_in_lists(*args):
+    res = None
+    for i in args:
+        if not res:
+            res = min(i)
+        else:
+            tmp = min(i)
+            res = min(res, tmp)
+    return res
+
+
 class PlotGraphic:
     def __init__(self, numerical_solution: NumericalMethod, exact_solution: ExactSolution):
         self.numerical_solution = numerical_solution
@@ -53,9 +75,27 @@ class PlotGraphic:
         e_runge_kutta_x, e_runge_kutta_y = \
             DE_Error.compute_gte(exact_solution_x, runge_kutta_y, exact_solution_y)
 
+        plt.subplot(2, 1, 2)
+        max_x, min_x = max_in_lists(e_euler_x, e_improved_euler_x, e_runge_kutta_x), \
+                       min_in_lists(e_euler_x, e_improved_euler_x, e_runge_kutta_x)
+
+        max_y, min_y = max_in_lists(e_euler_y, e_improved_euler_y, e_runge_kutta_y), \
+                       min_in_lists(e_euler_y, e_improved_euler_y, e_runge_kutta_y)
+        plt.xlim(min_x, max_x)
+        plt.ylim(min_y, max_y)
+
         self.e1.set_data(e_euler_x, e_euler_y)
         self.e2.set_data(e_improved_euler_x, e_improved_euler_y)
         self.e3.set_data(e_runge_kutta_x, e_runge_kutta_y)
+
+        plt.subplot(2, 1, 1)
+        max_x, min_x = max_in_lists(exact_solution_x, euler_x, improved_euler_x, runge_kutta_x), \
+                       min_in_lists(exact_solution_x, euler_x, improved_euler_x, runge_kutta_x)
+        max_y, min_y = max_in_lists(exact_solution_y, euler_y, improved_euler_y, runge_kutta_y), \
+                       min_in_lists(exact_solution_y, euler_y, improved_euler_y, runge_kutta_y)
+
+        plt.xlim(min_x, max_x)
+        plt.ylim(min_y, max_y)
 
         self.p1.set_data(euler_x, euler_y)
         self.p2.set_data(improved_euler_x, improved_euler_y)
@@ -95,8 +135,13 @@ class PlotGraphic:
         plt.subplots_adjust(right=0.5)
         plt.subplot(2, 1, 1)
         plt.title("f(x,y)=y/x-y-x")
-        plt.xlim(1, 10)
-        plt.ylim(-10, 20)
+        max_x, min_x = max_in_lists(exact_solution_x, euler_x, improved_euler_x, runge_kutta_x), \
+                       min_in_lists(exact_solution_x, euler_x, improved_euler_x, runge_kutta_x)
+        max_y, min_y = max_in_lists(exact_solution_y, euler_y, improved_euler_y, runge_kutta_y), \
+                       min_in_lists(exact_solution_y, euler_y, improved_euler_y, runge_kutta_y)
+
+        plt.xlim(min_x, max_x)
+        plt.ylim(min_y, max_y)
         self.p1, = plt.plot(euler_x, euler_y, linewidth=2, color=config.EULER_COLOR,
                             label="Euler method")
         self.p2, = plt.plot(improved_euler_x, improved_euler_y, linewidth=2, color=config.IMPROVED_EULER_COLOR,
@@ -137,13 +182,19 @@ class PlotGraphic:
         # Local Errors
         plt.subplot(2, 1, 2)
         plt.title("Local Errors")
-        plt.xlim(1, 10)
-        plt.ylim(0, 10)
+
         e_euler_x, e_euler_y = DE_Error.compute_gte(exact_solution_x, euler_y, exact_solution_y)
         e_improved_euler_x, e_improved_euler_y = DE_Error.compute_gte(exact_solution_x, improved_euler_y,
                                                                       exact_solution_y)
         e_runge_kutta_x, e_runge_kutta_y = DE_Error.compute_gte(exact_solution_x, runge_kutta_y, exact_solution_y)
 
+        max_x, min_x = max_in_lists(e_euler_x, e_improved_euler_x, e_runge_kutta_x), \
+                       min_in_lists(e_euler_x, e_improved_euler_x, e_runge_kutta_x)
+
+        max_y, min_y = max_in_lists(e_euler_y, e_improved_euler_y, e_runge_kutta_y), \
+                       min_in_lists(e_euler_y, e_improved_euler_y, e_runge_kutta_y)
+        plt.xlim(min_x, max_x)
+        plt.ylim(min_y, max_y)
         self.e1, = plt.plot(e_euler_x, e_euler_y, linewidth=2, color=config.EULER_COLOR,
                             label="Euler method local error")
         self.e2, = plt.plot(e_improved_euler_x, e_improved_euler_y, linewidth=2, color=config.IMPROVED_EULER_COLOR,
